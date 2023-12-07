@@ -1,5 +1,9 @@
 name: Android CI / Build App
 
+env:
+  # The name of the main module repository
+  main_project_module: app
+
 on: [push, pull_request]
 
 jobs:
@@ -14,12 +18,22 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        cache: gradle
+        #cache: gradle
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
+
+    # Run Tests Build
+    - name: Run gradle tests
+      run: ./gradlew test
+
+    # Run Build Project
+    - name: Build gradle project
       run: ./gradlew build
+
+    # Create APK Release
+    - name: Build apk release project (APK) - ${{ env.main_project_module }} module
+      run: ./gradlew assemble
